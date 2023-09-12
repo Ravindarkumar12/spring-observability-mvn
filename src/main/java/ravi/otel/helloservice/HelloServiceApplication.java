@@ -1,4 +1,4 @@
-package vn.cloud.helloservice;
+package ravi.otel.helloservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
