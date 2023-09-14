@@ -1,0 +1,67 @@
+version: '3'
+services:
+  # OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317" # Jaeger Thrift Collector Port
+    depends_on:
+      - jaeger
+
+  # Jaeger backend for trace visualization
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686" # Jaeger UI Port
+
+  # Spring Boot Application 1
+  spring-boot-app1:
+    image: your-spring-boot-app1-image:latest
+    ports:
+      - "8081:8080" # Adjust ports as needed
+    environment:
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=spring-boot-app1
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_OTLP_ENDPOINT=otel-collector:4317
+      - OTEL_EXPORTER_OTLP_SPAN_TIMEOUT=5s
+      - OTEL_EXPORTER_OTLP_METRICS_TIMEOUT=5s
+    depends_on:
+      - otel-collector
+
+  # Spring Boot Application 2
+  spring-boot-app2:
+    image: your-spring-boot-app2-image:latest
+    ports:
+      - "8082:8080" # Adjust ports as needed
+    environment:
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=spring-boot-app2
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_OTLP_ENDPOINT=otel-collector:4317
+      - OTEL_EXPORTER_OTLP_SPAN_TIMEOUT=5s
+      - OTEL_EXPORTER_OTLP_METRICS_TIMEOUT=5s
+    depends_on:
+      - otel-collector
+
+  # Spring Boot Application 3
+  spring-boot-app3:
+    image: your-spring-boot-app3-image:latest
+    ports:
+      - "8083:8080" # Adjust ports as needed
+    environment:
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=spring-boot-app3
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_OTLP_ENDPOINT=otel-collector:4317
+      - OTEL_EXPORTER_OTLP_SPAN_TIMEOUT=5s
+      - OTEL_EXPORTER_OTLP_METRICS_TIMEOUT=5s
+    depends_on:
+      - otel-collector
+
+
+
+---------------------------------------------------------
+

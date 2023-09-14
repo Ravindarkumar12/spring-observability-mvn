@@ -2,18 +2,19 @@ spring:
   application:
     name: Hello-service
     version: 1.2
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health
-  otlp:
-    metrics:
-      export:
-        url: http://localhost:4318/v1/metrics
-        step: 10s
-    tracing:
-      endpoint: http://localhost:4318/v1/traces
-  tracing:
-    sampling:
-      probability: 1.0
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health
+#  otlp:
+#    service-name: Hello-Service
+#    metrics:
+#      export:
+#        url: http://localhost:4318/v1/metrics
+#        step: 10s
+#    tracing:
+#      endpoint: http://localhost:4318/v1/traces
+#  tracing:
+#    sampling:
+#      probability: 1.0
