@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # Spring Boot Application
+  spring-boot-app:
+    image: my-spring-boot-app:v1
+    ports:
+      - "8080:8080"
+    volumes:
+      - type: bind
+        source: ./opentelemetry-javaagent.jar
+        target: /libs/opentelemetry-javaagent.jar
+    networks:
+      - app-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=skywalking-oap:11800
+    command: ["java", "-javaagent:/libs/skywalking-agent.jar", "-jar", "/app/app.jar"]
+    depends_on:
+      - skywalking-oap
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # SkyWalking OAP Server
+  skywalking-oap:
+    image: apache/skywalking-oap-server:9.0.0
+    ports:
+      - "11800:11800"
+    networks:
+      - app-network
+    environment:
+      - SW_STORAGE=elasticsearch
+      - SW_STORAGE_ES_CLUSTER_NODES=elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # SkyWalking UI
+  skywalking-ui:
+    image: apache/skywalking-ui:9.1.0
+    ports:
+      - "8081:8080"
+    networks:
+      - app-network
+    depends_on:
+      - skywalking-oap
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    ports:
+      - "9200:9200"
+    networks:
+      - app-network
+    environment:
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  app-network:
+    driver: bridge

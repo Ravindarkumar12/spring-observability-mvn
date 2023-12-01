@@ -21,6 +21,10 @@ services:
     image: your-spring-boot-app1-image:latest
     ports:
       - "8081:8080" # Adjust ports as needed
+    volumes:
+      - type: bind
+        source: ./opentelemetry-javaagent.jar
+        target: /libs/opentelemetry-javaagent.jar
     environment:
       - OTEL_RESOURCE_ATTRIBUTES=service.name=spring-boot-app1
       - OTEL_TRACES_EXPORTER=otlp
